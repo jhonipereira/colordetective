@@ -24,11 +24,17 @@ function extractColorsFromShadow(shadowValue: string): string[] {
 
   const colors: string[] = [];
   const rgbRegex = /rgba?\([^)]+\)/g;
+  const hslRegex = /hsla?\([^)]+\)/g;
   const hexRegex = /#[0-9A-Fa-f]{3,8}\b/g;
 
   const rgbMatches = shadowValue.match(rgbRegex);
   if (rgbMatches) {
     colors.push(...rgbMatches);
+  }
+
+  const hslMatches = shadowValue.match(hslRegex);
+  if (hslMatches) {
+    colors.push(...hslMatches);
   }
 
   const hexMatches = shadowValue.match(hexRegex);

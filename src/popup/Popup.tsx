@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { isValidNamedColor, namedColorToHex } from "../utils/colorUtils";
 
 interface AggregatedMatch {
   selector: string;
@@ -100,6 +101,17 @@ const Popup: React.FC = () => {
     return /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
   };
 
+  const validateColor = (color: string): boolean => {
+    return validateHexColor(color) || isValidNamedColor(color);
+  };
+
+  const normalizeColorInput = (color: string): string => {
+    if (isValidNamedColor(color)) {
+      return namedColorToHex(color);
+    }
+    return color.startsWith("#") ? color : `#${color}`;
+  };
+
   const refreshSearch = async (showNested: boolean, showFullPath: boolean) => {
     try {
       const [tab] = await chrome.tabs.query({
@@ -108,9 +120,7 @@ const Popup: React.FC = () => {
       });
       if (!tab.id) return;
 
-      const normalizedColor = hexColor.startsWith("#")
-        ? hexColor
-        : `#${hexColor}`;
+      const normalizedColor = normalizeColorInput(hexColor);
       const response = await chrome.tabs.sendMessage(tab.id, {
         action: "detectColor",
         color: normalizedColor,
@@ -130,8 +140,8 @@ const Popup: React.FC = () => {
     setError("");
     setMatches([]);
 
-    if (!validateHexColor(hexColor)) {
-      setError("Please enter a valid hex color (e.g., #FF5733 or #F57)");
+    if (!validateColor(hexColor)) {
+      setError("Please enter a valid color (e.g., #FF5733, #F57, or 'red')");
       return;
     }
 
@@ -157,9 +167,7 @@ const Popup: React.FC = () => {
         );
       }
 
-      const normalizedColor = hexColor.startsWith("#")
-        ? hexColor
-        : `#${hexColor}`;
+      const normalizedColor = normalizeColorInput(hexColor);
 
       const response = await chrome.tabs.sendMessage(tab.id, {
         action: "detectColor",
