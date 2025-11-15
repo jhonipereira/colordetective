@@ -35,9 +35,12 @@ const Popup: React.FC = () => {
         throw new Error('No active tab found');
       }
 
+      if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+        throw new Error('Cannot analyze Chrome internal pages. Please open a regular webpage.');
+      }
+
       const normalizedColor = hexColor.startsWith('#') ? hexColor : `#${hexColor}`;
 
-      // Send message to content script
       const response = await chrome.tabs.sendMessage(tab.id, {
         action: 'detectColor',
         color: normalizedColor,
@@ -47,7 +50,15 @@ const Popup: React.FC = () => {
         setMatches(response.matches);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      if (err instanceof Error) {
+        if (err.message.includes('Receiving end does not exist')) {
+          setError('Could not connect to page. Try refreshing the page.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('An error occurred');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +75,7 @@ const Popup: React.FC = () => {
         temporary: false,
       });
     } catch (err) {
-      console.error('Error highlighting element:', err);
+      // Silently fail for highlight actions
     }
   };
 
@@ -79,7 +90,7 @@ const Popup: React.FC = () => {
         temporary: true,
       });
     } catch (err) {
-      console.error('Error highlighting element:', err);
+      // Silently fail for highlight actions
     }
   };
 
@@ -92,7 +103,7 @@ const Popup: React.FC = () => {
         action: 'removeHighlight',
       });
     } catch (err) {
-      console.error('Error removing highlight:', err);
+      // Silently fail for highlight actions
     }
   };
 

@@ -43,12 +43,12 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #E54636;
 }
 
 button {
   padding: 10px 20px;
-  background-color: #3498db;
+  background-color: #E54636;
   color: white;
   border: none;
   border-radius: 4px;
@@ -58,7 +58,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background-color: #2980b9;
+  background-color: #c93a2c;
 }
 
 button:disabled {
@@ -105,20 +105,18 @@ button:disabled {
 }
 
 .match-item:hover {
-  background-color: #f0f7ff;
-  border-color: #3498db;
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+  background-color: #fef2f1;
+  border-color: #E54636;
+  box-shadow: 0 2px 8px rgba(229, 70, 54, 0.2);
 }
 
 .match-item:active {
-  transform: translateX(2px);
-  background-color: #e3f2fd;
+  background-color: #fde5e3;
 }
 
 .match-tag {
   font-weight: bold;
-  color: #3498db;
+  color: #E54636;
   margin-bottom: 5px;
   font-size: 12px;
 }
