@@ -4,6 +4,7 @@ export interface ColorMatch {
   colorProperty: string;
   colorValue: string;
   element?: HTMLElement;
+  pseudoElement?: '::before' | '::after';
 }
 
 export interface AggregatedColorMatch {
@@ -13,6 +14,7 @@ export interface AggregatedColorMatch {
   element?: HTMLElement;
   children?: AggregatedColorMatch[];
   depth?: number;
+  pseudoElement?: '::before' | '::after';
 }
 
 export type ColorProperty =

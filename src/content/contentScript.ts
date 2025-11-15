@@ -1,33 +1,52 @@
-import { detectColorInDOM, highlightElement, removeAllHighlights } from './colorDetector';
+import { detectColorInDOM, highlightElement, highlightPseudoElement, removeAllHighlights } from './colorDetector';
 import { AggregatedColorMatch } from '../utils/types';
 
 console.log('ColorDetective content script loaded');
 
 let matchedElements: Map<number, HTMLElement> = new Map();
+let matchedPseudoElements: Map<number, '::before' | '::after'> = new Map();
 
-function aggregateMatches(matches: ReturnType<typeof detectColorInDOM>): AggregatedColorMatch[] {
-  const elementMap = new Map<HTMLElement, AggregatedColorMatch>();
+function aggregateMatches(matches: ReturnType<typeof detectColorInDOM>): (AggregatedColorMatch & { pseudoElement?: '::before' | '::after' })[] {
+  // Use element + pseudo-element as composite key
+  const matchMap = new Map<HTMLElement, Map<string, AggregatedColorMatch & { pseudoElement?: '::before' | '::after' }>>();
 
   matches.forEach((match) => {
     if (!match.element) return;
 
-    if (elementMap.has(match.element)) {
-      const existing = elementMap.get(match.element)!;
+    const pseudoKey = match.pseudoElement || '';
+
+    if (!matchMap.has(match.element)) {
+      matchMap.set(match.element, new Map());
+    }
+
+    const elementMap = matchMap.get(match.element)!;
+
+    if (elementMap.has(pseudoKey)) {
+      const existing = elementMap.get(pseudoKey)!;
       existing.properties.push({
         property: match.colorProperty,
         value: match.colorValue,
       });
     } else {
-      elementMap.set(match.element, {
+      elementMap.set(pseudoKey, {
         selector: match.selector,
         tagName: match.tagName,
         properties: [{ property: match.colorProperty, value: match.colorValue }],
         element: match.element,
+        pseudoElement: match.pseudoElement,
       });
     }
   });
 
-  return Array.from(elementMap.values());
+  // Flatten the nested maps
+  const result: (AggregatedColorMatch & { pseudoElement?: '::before' | '::after' })[] = [];
+  for (const elementMap of matchMap.values()) {
+    for (const match of elementMap.values()) {
+      result.push(match);
+    }
+  }
+
+  return result;
 }
 
 function buildHierarchy(aggregated: AggregatedColorMatch[]): AggregatedColorMatch[] {
@@ -113,19 +132,23 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'detectColor') {
     const matches = detectColorInDOM(request.color, request.showFullPath || false);
     let aggregated = aggregateMatches(matches);
-    let finalMatches: AggregatedColorMatch[];
+    let finalMatches: (AggregatedColorMatch & { pseudoElement?: '::before' | '::after' })[];
 
     if (request.showNestedElements) {
       const hierarchy = buildHierarchy(aggregated);
-      finalMatches = flattenHierarchy(hierarchy);
+      finalMatches = flattenHierarchy(hierarchy) as (AggregatedColorMatch & { pseudoElement?: '::before' | '::after' })[];
     } else {
       finalMatches = aggregated.map(m => ({ ...m, depth: 0 }));
     }
 
     matchedElements.clear();
+    matchedPseudoElements.clear();
     finalMatches.forEach((match, index) => {
       if (match.element) {
         matchedElements.set(index, match.element);
+        if (match.pseudoElement) {
+          matchedPseudoElements.set(index, match.pseudoElement);
+        }
       }
     });
 
@@ -135,8 +158,15 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
   if (request.action === 'highlightElement') {
     const element = matchedElements.get(request.index);
+    const pseudoElement = matchedPseudoElements.get(request.index);
+
     if (element) {
-      highlightElement(element, request.temporary || false);
+      if (pseudoElement) {
+        removeAllHighlights();
+        highlightPseudoElement(element, pseudoElement, request.temporary || false);
+      } else {
+        highlightElement(element, request.temporary || false);
+      }
 
       element.scrollIntoView({
         behavior: 'smooth',

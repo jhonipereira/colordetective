@@ -468,7 +468,10 @@ const Popup: React.FC = () => {
             <label htmlFor="color-input" className="sr-only">
               Hex color code
             </label>
-            <div className="input-wrapper">
+            <div
+              className="input-wrapper"
+              style={{ paddingBottom: showHistory && searchHistory.length > 0 ? `${Math.min(searchHistory.length * 36 + 40, 212)}px` : '0' }}
+            >
               <input
                 id="color-input"
                 ref={searchInputRef}

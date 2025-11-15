@@ -19,6 +19,8 @@ const SHADOW_PROPERTIES: ColorProperty[] = [
   'text-shadow',
 ];
 
+const PSEUDO_ELEMENTS = ['::before', '::after'] as const;
+
 function extractColorsFromShadow(shadowValue: string): string[] {
   if (!shadowValue || shadowValue === 'none') return [];
 
@@ -136,12 +138,100 @@ export function detectColorInDOM(targetColor: string, showFullPath: boolean = fa
         }
       });
     });
+
+    // Check pseudo-elements (::before, ::after)
+    PSEUDO_ELEMENTS.forEach((pseudo) => {
+      const pseudoStyle = window.getComputedStyle(element, pseudo);
+      const content = pseudoStyle.getPropertyValue('content');
+
+      // Only check if pseudo-element has content (exists)
+      if (content && content !== 'none' && content !== '""' && content !== "''") {
+        COLOR_PROPERTIES.forEach((property) => {
+          const colorValue = pseudoStyle.getPropertyValue(property);
+
+          if (colorValue && colorsMatch(colorValue, targetColor)) {
+            matches.push({
+              selector: generateSelector(element, showFullPath) + pseudo,
+              tagName: element.tagName,
+              colorProperty: property,
+              colorValue: colorValue,
+              element: element,
+              pseudoElement: pseudo,
+            });
+          }
+        });
+
+        SHADOW_PROPERTIES.forEach((property) => {
+          const shadowValue = pseudoStyle.getPropertyValue(property);
+          const shadowColors = extractColorsFromShadow(shadowValue);
+
+          shadowColors.forEach((shadowColor) => {
+            if (colorsMatch(shadowColor, targetColor)) {
+              matches.push({
+                selector: generateSelector(element, showFullPath) + pseudo,
+                tagName: element.tagName,
+                colorProperty: property,
+                colorValue: shadowColor,
+                element: element,
+                pseudoElement: pseudo,
+              });
+            }
+          });
+        });
+      }
+    });
   });
 
   return matches;
 }
 
 const originalStyles = new WeakMap<HTMLElement, { outline: string; outlineOffset: string; backgroundColor: string }>();
+
+// Track elements with pseudo-element highlights
+const pseudoHighlightedElements = new Set<HTMLElement>();
+
+function ensurePseudoHighlightStyles(): void {
+  if (!document.getElementById('colordetective-pseudo-styles')) {
+    const style = document.createElement('style');
+    style.id = 'colordetective-pseudo-styles';
+    style.textContent = `
+      .colordetective-pseudo-before::before {
+        outline: 3px dashed rgba(229, 70, 54, 0.9) !important;
+        outline-offset: 2px !important;
+      }
+      .colordetective-pseudo-after::after {
+        outline: 3px dashed rgba(229, 70, 54, 0.9) !important;
+        outline-offset: 2px !important;
+      }
+      .colordetective-pseudo-before-temp::before {
+        outline: 2px dashed rgba(229, 70, 54, 0.6) !important;
+        outline-offset: 2px !important;
+      }
+      .colordetective-pseudo-after-temp::after {
+        outline: 2px dashed rgba(229, 70, 54, 0.6) !important;
+        outline-offset: 2px !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+export function highlightPseudoElement(
+  element: HTMLElement,
+  pseudo: '::before' | '::after',
+  temporary = false
+): void {
+  ensurePseudoHighlightStyles();
+
+  const suffix = temporary ? '-temp' : '';
+  const className = pseudo === '::before'
+    ? `colordetective-pseudo-before${suffix}`
+    : `colordetective-pseudo-after${suffix}`;
+
+  element.classList.add(className);
+  pseudoHighlightedElements.add(element);
+  element.setAttribute('data-colordetective-highlighted', temporary ? 'temp' : 'permanent');
+}
 
 export function highlightElement(element: HTMLElement, temporary = false): void {
   removeAllHighlights();
@@ -189,7 +279,17 @@ export function removeAllHighlights(): void {
         element.style.backgroundColor = '';
       }
 
+      // Remove pseudo-element highlight classes
+      element.classList.remove(
+        'colordetective-pseudo-before',
+        'colordetective-pseudo-after',
+        'colordetective-pseudo-before-temp',
+        'colordetective-pseudo-after-temp'
+      );
+
       element.removeAttribute('data-colordetective-highlighted');
     }
   });
+
+  pseudoHighlightedElements.clear();
 }

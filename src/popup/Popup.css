@@ -229,7 +229,7 @@ input:focus {
 
 .history-dropdown {
   position: absolute;
-  top: 100%;
+  top: 40px;
   left: 0;
   right: 0;
   background-color: var(--bg-secondary);
@@ -240,6 +240,7 @@ input:focus {
   max-height: 200px;
   overflow-y: auto;
   margin-top: 4px;
+  margin-bottom: 12px;
 }
 
 .history-header {
@@ -307,6 +308,7 @@ button {
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+  max-height: 39px;
 }
 
 button:hover:not(:disabled) {
