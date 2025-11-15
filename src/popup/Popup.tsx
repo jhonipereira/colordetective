@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 
-interface ColorMatch {
+interface AggregatedMatch {
   selector: string;
   tagName: string;
-  colorProperty: string;
-  colorValue: string;
+  properties: Array<{ property: string; value: string }>;
 }
 
 const Popup: React.FC = () => {
   const [hexColor, setHexColor] = useState('');
-  const [matches, setMatches] = useState<ColorMatch[]>([]);
+  const [matches, setMatches] = useState<AggregatedMatch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -140,7 +139,13 @@ const Popup: React.FC = () => {
               >
                 <div className="match-tag">{match.tagName}</div>
                 <div className="match-selector">{match.selector}</div>
-                <div className="match-property">{match.colorProperty}: {match.colorValue}</div>
+                <div className="match-properties">
+                  {match.properties.map((prop, i) => (
+                    <div key={i} className="match-property">
+                      {prop.property}: {prop.value}
+                    </div>
+                  ))}
+                </div>
               </li>
             ))}
           </ul>
