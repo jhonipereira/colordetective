@@ -53,6 +53,49 @@ const Popup: React.FC = () => {
     }
   };
 
+  const handleElementClick = async (index: number) => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab.id) return;
+
+      await chrome.tabs.sendMessage(tab.id, {
+        action: 'highlightElement',
+        index: index,
+        temporary: false,
+      });
+    } catch (err) {
+      console.error('Error highlighting element:', err);
+    }
+  };
+
+  const handleElementHover = async (index: number) => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab.id) return;
+
+      await chrome.tabs.sendMessage(tab.id, {
+        action: 'highlightElement',
+        index: index,
+        temporary: true,
+      });
+    } catch (err) {
+      console.error('Error highlighting element:', err);
+    }
+  };
+
+  const handleElementMouseLeave = async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab.id) return;
+
+      await chrome.tabs.sendMessage(tab.id, {
+        action: 'removeHighlight',
+      });
+    } catch (err) {
+      console.error('Error removing highlight:', err);
+    }
+  };
+
   return (
     <div className="popup-container">
       <h1>ColorDetective</h1>
@@ -74,9 +117,16 @@ const Popup: React.FC = () => {
       {matches.length > 0 && (
         <div className="results">
           <h2>Found {matches.length} element{matches.length !== 1 ? 's' : ''}</h2>
+          <p className="hint">💡 Click to highlight, hover to preview</p>
           <ul className="matches-list">
             {matches.map((match, index) => (
-              <li key={index} className="match-item">
+              <li
+                key={index}
+                className="match-item"
+                onClick={() => handleElementClick(index)}
+                onMouseEnter={() => handleElementHover(index)}
+                onMouseLeave={handleElementMouseLeave}
+              >
                 <div className="match-tag">{match.tagName}</div>
                 <div className="match-selector">{match.selector}</div>
                 <div className="match-property">{match.colorProperty}: {match.colorValue}</div>

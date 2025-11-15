@@ -95,26 +95,74 @@ export function detectColorInDOM(targetColor: string): ColorMatch[] {
   return matches;
 }
 
+// Store original styles to restore them later
+const originalStyles = new WeakMap<HTMLElement, { outline: string; outlineOffset: string; backgroundColor: string }>();
+
 /**
- * Highlights elements on the page
+ * Highlights a single element on the page (like DevTools inspector)
+ * @param element - The HTML element to highlight
+ * @param temporary - If true, uses a lighter highlight for hover preview
+ */
+export function highlightElement(element: HTMLElement, temporary = false): void {
+  // Remove all previous highlights first
+  removeAllHighlights();
+
+  // Store original styles if not already stored
+  if (!originalStyles.has(element)) {
+    originalStyles.set(element, {
+      outline: element.style.outline,
+      outlineOffset: element.style.outlineOffset,
+      backgroundColor: element.style.backgroundColor,
+    });
+  }
+
+  // Apply highlight styles (similar to Chrome DevTools)
+  if (temporary) {
+    // Lighter highlight for hover
+    element.style.outline = '2px dashed rgba(66, 133, 244, 0.6)';
+    element.style.outlineOffset = '2px';
+  } else {
+    // Stronger highlight for click
+    element.style.outline = '3px solid rgba(66, 133, 244, 0.9)';
+    element.style.outlineOffset = '2px';
+    element.style.backgroundColor = 'rgba(66, 133, 244, 0.1)';
+  }
+
+  // Add a data attribute to track highlighted elements
+  element.setAttribute('data-colordetective-highlighted', temporary ? 'temp' : 'permanent');
+}
+
+/**
+ * Highlights multiple elements on the page
  * @param elements - Array of HTML elements to highlight
  */
 export function highlightElements(elements: HTMLElement[]): void {
   elements.forEach((element) => {
-    element.style.outline = '3px solid #FF0000';
-    element.style.outlineOffset = '2px';
+    highlightElement(element, false);
   });
 }
 
 /**
- * Removes highlighting from elements
+ * Removes all highlighting from elements
  */
-export function removeHighlights(): void {
-  const elements = document.querySelectorAll('[style*="outline"]');
+export function removeAllHighlights(): void {
+  const elements = document.querySelectorAll('[data-colordetective-highlighted]');
+
   elements.forEach((element) => {
     if (element instanceof HTMLElement) {
-      element.style.outline = '';
-      element.style.outlineOffset = '';
+      const original = originalStyles.get(element);
+
+      if (original) {
+        element.style.outline = original.outline;
+        element.style.outlineOffset = original.outlineOffset;
+        element.style.backgroundColor = original.backgroundColor;
+      } else {
+        element.style.outline = '';
+        element.style.outlineOffset = '';
+        element.style.backgroundColor = '';
+      }
+
+      element.removeAttribute('data-colordetective-highlighted');
     }
   });
 }
