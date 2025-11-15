@@ -5,7 +5,39 @@ const COLOR_PROPERTIES: ColorProperty[] = [
   'color',
   'background-color',
   'border-color',
+  'border-top-color',
+  'border-right-color',
+  'border-bottom-color',
+  'border-left-color',
+  'outline-color',
+  'text-decoration-color',
+  'caret-color',
 ];
+
+const SHADOW_PROPERTIES: ColorProperty[] = [
+  'box-shadow',
+  'text-shadow',
+];
+
+function extractColorsFromShadow(shadowValue: string): string[] {
+  if (!shadowValue || shadowValue === 'none') return [];
+
+  const colors: string[] = [];
+  const rgbRegex = /rgba?\([^)]+\)/g;
+  const hexRegex = /#[0-9A-Fa-f]{3,8}\b/g;
+
+  const rgbMatches = shadowValue.match(rgbRegex);
+  if (rgbMatches) {
+    colors.push(...rgbMatches);
+  }
+
+  const hexMatches = shadowValue.match(hexRegex);
+  if (hexMatches) {
+    colors.push(...hexMatches);
+  }
+
+  return colors;
+}
 
 function generateSelector(element: HTMLElement, fullPath: boolean = false): string {
   if (!fullPath) {
@@ -80,6 +112,23 @@ export function detectColorInDOM(targetColor: string, showFullPath: boolean = fa
           element: element,
         });
       }
+    });
+
+    SHADOW_PROPERTIES.forEach((property) => {
+      const shadowValue = computedStyle.getPropertyValue(property);
+      const shadowColors = extractColorsFromShadow(shadowValue);
+
+      shadowColors.forEach((shadowColor) => {
+        if (colorsMatch(shadowColor, targetColor)) {
+          matches.push({
+            selector: generateSelector(element, showFullPath),
+            tagName: element.tagName,
+            colorProperty: property,
+            colorValue: shadowColor,
+            element: element,
+          });
+        }
+      });
     });
   });
 

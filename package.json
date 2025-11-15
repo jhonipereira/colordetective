@@ -5,8 +5,9 @@
   "main": "eslint.config.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && npm run copy-manifest",
+    "build": "tsc && vite build && npm run copy-manifest && npm run copy-icons",
     "copy-manifest": "cp manifest.json dist/",
+    "copy-icons": "mkdir -p dist/assets/icons && cp -r src/assets/icons/* dist/assets/icons/",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
