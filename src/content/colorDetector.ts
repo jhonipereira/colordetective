@@ -7,52 +7,59 @@ const COLOR_PROPERTIES: ColorProperty[] = [
   'border-color',
 ];
 
-function generateSelector(element: HTMLElement): string {
-  if (element.id) {
-    return `#${element.id}`;
-  }
+function generateSelector(element: HTMLElement, fullPath: boolean = false): string {
+  if (!fullPath) {
+    let selector = element.tagName.toLowerCase();
 
-  if (element.className && typeof element.className === 'string') {
-    const classes = element.className.trim().split(/\s+/).join('.');
-    if (classes) {
-      return `${element.tagName.toLowerCase()}.${classes}`;
+    if (element.id) {
+      return `${selector}#${element.id}`;
     }
+
+    if (element.className && typeof element.className === 'string') {
+      const classes = element.className.trim().split(/\s+/).filter(c => c).join('.');
+      if (classes) {
+        selector += `.${classes}`;
+      }
+    }
+
+    return selector;
   }
 
   const path: string[] = [];
   let current: HTMLElement | null = element;
 
-  while (current && current.tagName) {
+  while (current && current.tagName && current.tagName.toLowerCase() !== 'html') {
     let selector = current.tagName.toLowerCase();
 
     if (current.id) {
       selector += `#${current.id}`;
-      path.unshift(selector);
-      break;
+    } else if (current.className && typeof current.className === 'string') {
+      const classes = current.className.trim().split(/\s+/).filter(c => c).join('.');
+      if (classes) {
+        selector += `.${classes}`;
+      }
     }
 
     const parent: HTMLElement | null = current.parentElement;
-    if (parent) {
+    if (parent && !current.id) {
       const siblings = Array.from(parent.children).filter(
         (child): child is Element => child.tagName === current!.tagName
       );
 
       if (siblings.length > 1) {
         const index = siblings.indexOf(current) + 1;
-        selector += `:nth-child(${index})`;
+        selector += `:nth-of-type(${index})`;
       }
     }
 
     path.unshift(selector);
     current = parent;
-
-    if (path.length >= 4) break;
   }
 
-  return path.join(' > ');
+  return 'html > ' + path.join(' > ');
 }
 
-export function detectColorInDOM(targetColor: string): ColorMatch[] {
+export function detectColorInDOM(targetColor: string, showFullPath: boolean = false): ColorMatch[] {
   const matches: ColorMatch[] = [];
   const elements = document.querySelectorAll('*');
 
@@ -66,7 +73,7 @@ export function detectColorInDOM(targetColor: string): ColorMatch[] {
 
       if (colorValue && colorsMatch(colorValue, targetColor)) {
         matches.push({
-          selector: generateSelector(element),
+          selector: generateSelector(element, showFullPath),
           tagName: element.tagName,
           colorProperty: property,
           colorValue: colorValue,

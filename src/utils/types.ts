@@ -11,6 +11,8 @@ export interface AggregatedColorMatch {
   tagName: string;
   properties: Array<{ property: string; value: string }>;
   element?: HTMLElement;
+  children?: AggregatedColorMatch[];
+  depth?: number;
 }
 
 export type ColorProperty = 'color' | 'background-color' | 'border-color' | 'fill' | 'stroke';
