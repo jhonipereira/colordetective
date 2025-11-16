@@ -4,6 +4,13 @@
   "description": "A browser extension to investigate elements by color profiles",
   "main": "eslint.config.js",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && vite build --config vite.content.config.ts && npm run copy-manifest && npm run copy-icons",
+    "build:content": "vite build --config vite.content.config.ts",
+    "copy-manifest": "cp manifest.json dist/",
+    "copy-icons": "mkdir -p dist/assets/icons && cp -r src/assets/icons/* dist/assets/icons/",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +22,18 @@
   "bugs": {
     "url": "https://github.com/jhonipereira/colordetective/issues"
   },
-  "homepage": "https://github.com/jhonipereira/colordetective#readme"
+  "homepage": "https://github.com/jhonipereira/colordetective#readme",
+  "devDependencies": {
+    "@types/chrome": "0.1.29",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.5",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "4.7.0",
+    "typescript": "5.9.3",
+    "vite": "6.4.1"
+  },
+  "dependencies": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  }
 }
