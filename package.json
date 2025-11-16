@@ -9,6 +9,7 @@
     "build:content": "vite build --config vite.content.config.ts",
     "copy-manifest": "cp manifest.json dist/",
     "copy-icons": "mkdir -p dist/assets/icons && cp -r src/assets/icons/* dist/assets/icons/",
+    "package": "npm run build && cd dist && zip -r ../colordetective-v1.0.0.zip . && cd ..",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -33,6 +34,7 @@
     "vite": "6.4.1"
   },
   "dependencies": {
+    "lucide-react": "0.553.0",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   }

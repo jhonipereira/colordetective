@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { isValidNamedColor, namedColorToHex } from "../utils/colorUtils";
+import {
+  Home,
+  Settings,
+  Search,
+  X,
+  Copy,
+  Check,
+  Sun,
+  Moon,
+  Monitor,
+} from "lucide-react";
 
 interface AggregatedMatch {
   selector: string;
@@ -449,7 +460,7 @@ const Popup: React.FC = () => {
             aria-label="Home - Search for colors"
             aria-current={currentView === "home" ? "page" : undefined}
           >
-            🏠
+            <Home size={18} />
           </button>
           <button
             className={`nav-link ${currentView === "settings" ? "active" : ""}`}
@@ -457,7 +468,7 @@ const Popup: React.FC = () => {
             aria-label="Settings"
             aria-current={currentView === "settings" ? "page" : undefined}
           >
-            ⚙️
+            <Settings size={18} />
           </button>
         </nav>
       </header>
@@ -531,7 +542,7 @@ const Popup: React.FC = () => {
                   : "Search for elements with this color"
               }
             >
-              {isLoading ? "Searching..." : "Search"}
+              {isLoading ? "Searching..." : <><Search size={14} /> Search</>}
             </button>
             {(hexColor || matches.length > 0 || hasSearched) && (
               <button
@@ -539,7 +550,7 @@ const Popup: React.FC = () => {
                 onClick={handleClear}
                 aria-label="Clear search and results"
               >
-                ✕
+                <X size={14} />
               </button>
             )}
           </div>
@@ -558,7 +569,7 @@ const Popup: React.FC = () => {
           {hasSearched && matches.length === 0 && !error && !isLoading && (
             <div className="empty-state" role="status" aria-live="polite">
               <div className="empty-icon" aria-hidden="true">
-                🔍
+                <Search size={48} strokeWidth={1.5} />
               </div>
               <p>No elements found with this color</p>
               <span className="empty-hint">
@@ -628,7 +639,7 @@ const Popup: React.FC = () => {
                             : `Copy selector for ${match.tagName}`
                         }
                       >
-                        {copiedIndex === index ? "✓" : "📋"}
+                        {copiedIndex === index ? <Check size={12} /> : <Copy size={12} />}
                       </button>
                     </div>
                     <div className="match-selector" aria-hidden="true">
@@ -675,7 +686,7 @@ const Popup: React.FC = () => {
                 aria-checked={settings.theme === "light"}
                 aria-label="Light theme"
               >
-                ☀️ Light
+                <Sun size={14} /> Light
               </button>
               <button
                 className={`theme-option ${
@@ -686,7 +697,7 @@ const Popup: React.FC = () => {
                 aria-checked={settings.theme === "dark"}
                 aria-label="Dark theme"
               >
-                🌙 Dark
+                <Moon size={14} /> Dark
               </button>
               <button
                 className={`theme-option ${
@@ -697,7 +708,7 @@ const Popup: React.FC = () => {
                 aria-checked={settings.theme === "auto"}
                 aria-label="Auto theme based on system preference"
               >
-                🔄 Auto
+                <Monitor size={14} /> Auto
               </button>
             </div>
           </div>
