@@ -1,4 +1,9 @@
-# ColorDetective 🎨🔍
+<div align="center">
+  <img src="src/assets/logo.png" alt="ColorDetective Logo" width="128" height="128">
+
+# ColorDetective
+
+</div>
 
 A powerful Chrome extension that helps you find and investigate all HTML elements on any webpage by their color properties. Simply input a color code (hex, RGB, HSL, or named colors) and discover every element using that color.
 
@@ -6,28 +11,28 @@ A powerful Chrome extension that helps you find and investigate all HTML element
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Chrome](https://img.shields.io/badge/chrome-extension-yellow.svg)
 
-## ✨ Features
+## Features
 
-- 🔍 **Multi-format Color Search** - Search using hex (#FF5733), RGB (rgb(255, 87, 51)), HSL (hsl(14, 100%, 60%)), or 147 named colors
-- 📋 **Comprehensive Property Detection** - Scans 14+ CSS color properties including shadows
-- 🎯 **Pseudo-element Support** - Detects colors in ::before and ::after pseudo-elements
-- ⚡ **Real-time DOM Scanning** - Instantly searches entire page DOM
+- **Multi-format Color Search** - Search using hex (#FF5733), RGB (rgb(255, 87, 51)), HSL (hsl(14, 100%, 60%)), or 147 named colors
+- **Comprehensive Property Detection** - Scans 14+ CSS color properties including shadows
+- **Pseudo-element Support** - Detects colors in ::before and ::after pseudo-elements
+- **Real-time DOM Scanning** - Instantly searches entire page DOM
 
-- 🎨 **Theme Support** - Light, Dark, and Auto (system-preference) themes
-- 📜 **Search History** - Stores up to 10 recent searches per website with color swatches
-- 🖱️ **Interactive Highlighting** - Click to highlight and scroll to element on page
-- 👁️ **Hover Preview** - Temporary highlight when hovering over results
-- 📋 **One-click Copy** - Copy CSS selectors instantly
-- ⌨️ **Keyboard Navigation** - Full keyboard support (arrows, Enter, Ctrl+C)
-- ♿ **Accessibility** - Complete ARIA labels and screen reader support
+- **Theme Support** - Light, Dark, and Auto (system-preference) themes
+- **Search History** - Stores up to 10 recent searches per website with color swatches
+- **Interactive Highlighting** - Click to highlight and scroll to element on page
+- **Hover Preview** - Temporary highlight when hovering over results
+- **One-click Copy** - Copy CSS selectors instantly
+- **Keyboard Navigation** - Full keyboard support (arrows, Enter, Ctrl+C)
+- **Accessibility** - Complete ARIA labels and screen reader support
 
 ### Advanced Options
 
-- 🌳 **Nested Element View** - Hierarchical display showing DOM relationships
-- 🛤️ **Full Path Selectors** - Option to show complete CSS path from root
-- 🔄 **Auto-refresh** - Settings changes update results immediately
+- **Nested Element View** - Hierarchical display showing DOM relationships
+- **Full Path Selectors** - Option to show complete CSS path from root
+- **Auto-refresh** - Settings changes update results immediately
 
-## 🎨 Supported Color Properties
+## Supported Color Properties
 
 - **Text Colors**: `color`, `caret-color`
 - **Background**: `background-color`
@@ -70,7 +75,7 @@ npm run build
    - Click "Load unpacked"
    - Select the `dist/` directory from this project
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Basic Search
 
@@ -172,7 +177,7 @@ Production build is optimized with:
 - No source maps
 - Consistent asset naming
 
-## 📦 Bundle Sizes
+## Bundle Sizes
 
 - **Popup JS**: ~210KB (includes React)
 - **Popup CSS**: ~6.5KB
@@ -193,7 +198,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 6. Push: `git push origin feature/amazing-feature`
 7. Open a Pull Request
 
-## 📄 Privacy
+## Privacy
 
 ColorDetective processes all data locally in your browser. **No data is ever sent to external servers.** The extension only:
 
@@ -201,14 +206,14 @@ ColorDetective processes all data locally in your browser. **No data is ever sen
 - Stores settings and search history locally using chrome.storage.local
 - Requires `activeTab` and `scripting` permissions for DOM access
 
-## 🐛 Known Limitations
+## Known Limitations
 
 - Gradient colors are not yet detected
 - Alpha/opacity matching uses exact values (no tolerance)
 - Very large DOMs (10,000+ elements) may have slight performance impact
 - Dynamically loaded content after search won't be included (re-search required)
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] Color picker integration (To evaluate)
 - [ ] Similar color matching with tolerance slider (To evaluate)
@@ -217,11 +222,11 @@ ColorDetective processes all data locally in your browser. **No data is ever sen
 - [ ] Gradient detection (To evaluate)
 - [ ] Performance optimizations for large DOMs (continuous)
 
-## 📜 License
+## License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 👨‍💻 Author
+## Author
 
 **Jhoni S. Pereira**
 
@@ -229,7 +234,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 - Website: https://jhonipereira.com/
 - GitHub: [@jhonipereira](https://github.com/jhonipereira)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with React, TypeScript, and Vite
 - Uses Chrome Extension Manifest V3
