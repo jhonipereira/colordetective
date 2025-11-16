@@ -37,6 +37,7 @@ pnpm-debug.log*
 
 # Local markdown files
 local-md/
+store-assets/
 
 # Optional npm cache directory
 .npm

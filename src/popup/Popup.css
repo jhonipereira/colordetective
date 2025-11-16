@@ -79,6 +79,7 @@ h1 {
   border-radius: 4px;
   opacity: 0.6;
   transition: all 0.2s ease;
+  color: var(--text-primary);
 }
 
 .nav-link:hover {
@@ -309,6 +310,10 @@ button {
   font-size: 14px;
   font-weight: 600;
   max-height: 39px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 button:hover:not(:disabled) {
