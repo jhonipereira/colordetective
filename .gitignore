@@ -35,6 +35,9 @@ pnpm-debug.log*
 *.swo
 *~
 
+# Claude Code
+.claude/
+
 # Local markdown files
 local-md/
 store-assets/

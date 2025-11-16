@@ -1,8 +1,6 @@
 import { detectColorInDOM, highlightElement, highlightPseudoElement, removeAllHighlights } from './colorDetector';
 import { AggregatedColorMatch } from '../utils/types';
 
-console.log('ColorDetective content script loaded');
-
 let matchedElements: Map<number, HTMLElement> = new Map();
 let matchedPseudoElements: Map<number, '::before' | '::after'> = new Map();
 
